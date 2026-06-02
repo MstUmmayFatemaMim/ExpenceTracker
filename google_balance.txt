@@ -1,0 +1,9 @@
+===== Your Expenses (google) =====
+Total Income: 2000.0
+
+Category     Product      Qty    Price    Total   
+--------------------------------------------------
+rent         flat         1      5000.0   5000.0  
+--------------------------------------------------
+Total Expense: 5000.0
+Balance:       -3000.0

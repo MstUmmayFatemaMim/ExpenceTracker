@@ -1,0 +1,10 @@
+===== Your Expenses (microsoft) =====
+Total Income: 20000.0
+
+Category     Product      Qty    Price    Total   
+--------------------------------------------------
+food         biscute      2      400.0    800.0   
+rent         flat         1      4000.0   4000.0  
+--------------------------------------------------
+Total Expense: 4800.0
+Balance:       15200.0

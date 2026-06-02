@@ -1,0 +1,13 @@
+===== Your Expenses (mim) =====
+Total Income: 100000.0
+
+Category     Product      Qty    Price    Total   
+--------------------------------------------------
+food         cake         2      50000.0  100000.0
+rent         flat         1      50000.0  50000.0 
+tour         cox's bazar  1      5000.0   5000.0  
+food         chocolate    5      50.0     250.0   
+food         cake         4      500.0    2000.0  
+--------------------------------------------------
+Total Expense: 157250.0
+Balance:       -57250.0
