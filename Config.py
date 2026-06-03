@@ -3,4 +3,4 @@
 
 FILE_PATH = r"ExpenseTracker.csv"
 
-COLUMNS = ["username", "password", "email","income","category", "product", "quantity", "price", "total_price"]
+COLUMNS = ["username", "password", "email", "income", "category", "product", "quantity", "price", "total_price", "date"]

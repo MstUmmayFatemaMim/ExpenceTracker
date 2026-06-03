@@ -1,26 +1,33 @@
 import csv
 from Config import FILE_PATH, COLUMNS
 from LeaderBoard import leaderboard
+from datetime import date
+
+
 class dashboard:
-    # def __init__(self):
-    #     self.lb = leaderboard()
     def add_income(self, username):
         income = input("Please enter the amount of income: ")
         with open(FILE_PATH, "a", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=COLUMNS)
+            writer = csv.DictWriter(f,
+                                    fieldnames=COLUMNS)  ########Creates a writer that knows your 9 column names from Config.py.
+            ######## You write by column NAME not position — safer than positional writing.
             writer.writerow({
+                ########Writes ONE row. Only fills username and income. The other 7 columns (password, email, category...)
+                ###### stay BLANK automatically — DictWriter fills missing keys with empty string.
                 "username": username,
                 "income": income,
             })
         print("Income added successfully")
 
-    def add_expense(self, username, first_expense=False):
+    def add_expense(self, username):
         print("Categories: rent / food / medicine / tour / other")
         category = input("Please enter your category: ")
         product = input("Please enter your product: ")
         quantity = int(input("Please enter your quantity: "))
         price = float(input("Please enter your price: "))
         totalcost = quantity * price
+
+        today = date.today().strftime("%Y-%m-%d")
 
         with open(FILE_PATH, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=COLUMNS)
@@ -31,15 +38,56 @@ class dashboard:
                 "quantity": quantity,
                 "price": price,
                 "total_price": totalcost,
+                "date": today,
             })
         print("Expenses added successfully")
 
-    def view_balance(self, username):
+    def view_monthly(self, username):
+        month = input("Please enter your month: ")
+        # MAGIC LINE: This converts "2026-5" to "2026-05" so .startswith() works perfectly!
+        month = "-".join([f"{int(x):02d}" if i == 1 else x for i, x in enumerate(month.split("-"))])
 
-        # ── SWITCH: collect only this user's rows ──────────
+        total = 0
+        print(f"\n===== Monthly Expenses ({username}) — {month} =====")
+        print(f"{'Category':<12} {'Product':<12} {'Qty':<5} {'Price':<8} {'Total':<8} {'Date':<12}")
+        print("-" * 60)
+        with open(FILE_PATH, "r", newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                if row["username"] == username and row["category"] != "" and row["date"].startswith(month):
+                    total += float(row["total_price"])
+                    print(
+                        f"{row['category']:<12} {row['product']:<12} {row['quantity']:<5} {row['price']:<8} {row['total_price']:<8} {row['date']:<12}")
+        print("-" * 60)
+        print(f"Total Spent in {month}: {total}")
+
+        # collecting = False
+        # my_rows = []
+        # with open(FILE_PATH, "r", newline="", encoding="utf-8") as f:
+        #     for row in csv.DictReader(f):
+        #         if row["username"] == username:
+        #             collecting = True
+        #         if row["username"] != "" and row["username"] != username:
+        #             collecting = False
+        #         if collecting:
+        #             my_rows.append(row)
+        # print(f"\n===== Your Expenses ({username}) =====")
+        #
+        # print(f"{'Category':<12} {'Product':<12} {'Qty':<6} {'Price':<8} {'Total':<8} {'Date':<12}")
+        # print("-" * 50)
+        #
+        # total_expense = 0
+        # for row in my_rows:
+        #     if row["category"] != "" and row["income"] == "" and row["date"].startswith(month):
+        #         total_expense += float(row["total_price"]) if row["total_price"] else 0
+        #         print(
+        #             f"{row['category']:<12} {row['product']:<12} {row['quantity']:<6} {row['price']:<8} {row['total_price']:<8} {row['date']:<12}")
+        #
+        # print("-" * 50)
+        # print(f"Total Expense: {total_expense}")
+
+    def view_balance(self, username):
         collecting = False
         my_rows = []
-
         with open(FILE_PATH, "r", newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
                 if row["username"] == username:
@@ -49,22 +97,18 @@ class dashboard:
                 if collecting:
                     my_rows.append(row)
 
-        # STEP 1: Add up all income first
         total_income = 0
         for row in my_rows:
             if row["income"] != "":
                 total_income += float(row["income"])
 
-        # STEP 2: Print income OUTSIDE the table
         print(f"\n===== Your Expenses ({username}) =====")
         print(f"Total Income: {total_income}")  # ← income printed here, alone
         print()
 
-        # STEP 3: Print expense table header
         print(f"{'Category':<12} {'Product':<12} {'Qty':<6} {'Price':<8} {'Total':<8}")
         print("-" * 50)
 
-        # STEP 4: Print only expense rows inside the table
         total_expense = 0
         for row in my_rows:
             if row["category"] != "" and row["income"] == "":  # expense rows only
@@ -72,7 +116,6 @@ class dashboard:
                 print(
                     f"{row['category']:<12} {row['product']:<12} {row['quantity']:<6} {row['price']:<8} {row['total_price']:<8}")
 
-        # STEP 5: Print summary below the table
         print("-" * 50)
         print(f"Total Expense: {total_expense}")
         print(f"Balance:       {total_income - total_expense}")
@@ -96,7 +139,7 @@ class dashboard:
         else:
             print("Returning to dashboard menu...")
 
-    def view_by_category(self,username):
+    def view_by_category(self, username):
         with open(FILE_PATH, "r", newline="", encoding="utf-8") as f:
             all_rows = list(csv.DictReader(f))
         my_rows = []
@@ -108,16 +151,17 @@ class dashboard:
                 collecting = False
             if collecting:
                 my_rows.append(row)
-        category_total={}
+        category_total = {}
         for row in my_rows:
-            if row["category"] !="" and row["income"]== "":
-                cat=row["category"]
-                amount=float(row["total_price"]) if row["total_price"] else 0
+            if row["category"] != "" and row["income"] == "":
+                cat = row["category"]
+                amount = float(row["total_price"]) if row["total_price"] else 0
 
                 if cat in category_total:
-                    category_total[cat]+=amount     #########  if category already have and add the same category multiple time
+                    category_total[
+                        cat] += amount  #########  if category already have and add the same category multiple time
                 else:
-                    category_total[cat]=amount      ###### new category or single time add the category
+                    category_total[cat] = amount  ###### new category or single time add the category
         print(f"\n===== Expenses by Category ({username}) =====")
         print(f"{'Category':<15} {'Total':<10}")
         print("-" * 30)
@@ -128,13 +172,13 @@ class dashboard:
         print("-" * 30)
         print(f"{'Grand Total':<15} {sum(category_total.values()):<10}")
 
-    def word_frequency(self,username):
+    def word_frequency(self, username):
         word_frequency = []
         with open(FILE_PATH, "r", newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
                 # if row["username"] == username and row["product"] != "":     ###   Used for product
                 #     word_frequency.append(row["product"].lower())
-                if row["username"] == username and row["category"] != "":      #### Used for category
+                if row["username"] == username and row["category"] != "":  #### Used for category
                     word_frequency.append(row["category"].lower())
 
         stock = {}
@@ -144,24 +188,23 @@ class dashboard:
             else:
                 stock[letter] = 1
 
-        # STEP 3 — print result
         print(f"\n===== Word Frequency ({username}) =====")
         for w, count in stock.items():
             print(f"{w:<15} {count} time(s)")
 
-    def get_grade(self,username):
+    def get_grade(self, username):
         total_income = 0
         total_expense = 0
         with open(FILE_PATH, "r", encoding="utf-8") as f:
             for row in csv.DictReader(f):
-                if row["username"]==username:
-                    if row["income"]!="":
+                if row["username"] == username:
+                    if row["income"] != "":
                         total_income += float(row["income"])
-                    if row["category"] != "" and row["income"]=="":
-                        total_expense+=float(row["total_price"]) if row["total_price"] else 0
+                    if row["category"] != "" and row["income"] == "":
+                        total_expense += float(row["total_price"]) if row["total_price"] else 0
         # if total_income==0:
         #     print("You don't have any expenses!")
-        ratio=(total_expense/total_income)*100
+        ratio = (total_expense / total_income) * 100
         if ratio <= 50:
             grade = "A"
             msg = "Excellent — saving more than spending"
@@ -183,6 +226,7 @@ class dashboard:
         print(f"Expense : {total_expense}")
         print(f"Ratio   : {ratio:.1f}%")
         print(f"Grade   : {grade} — {msg}")
+
     def dashboard(self, username):
         while True:
             print(f"\n===== Dashboard ({username}) =====")
@@ -193,7 +237,8 @@ class dashboard:
             print("5. Leaderboard")
             print("6. Word Frequency")
             print("7. Get Grade")
-            print("8. Logout")
+            print("8. Monthly Budget")
+            print("9. Logout")
 
             choice = input("\nChoose: ").strip()
 
@@ -212,8 +257,9 @@ class dashboard:
             elif choice == "7":
                 self.get_grade(username)
             elif choice == "8":
+                self.view_monthly(username)
+            elif choice == "9":
                 print("Going back.")
-                break
+                break  #########   It jumps only one level.
             else:
                 print("Invalid choice.")
-

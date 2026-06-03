@@ -1,15 +1,17 @@
 import csv
 import os
-from Config import FILE_PATH,COLUMNS
+from Config import FILE_PATH, COLUMNS
+
+
 # # File_Path=r"C:\Users\Mim\Downloads\ExpenseTracker.csv"       this does not work properly
 # File_Path=r"ExpenseTracker.csv"
 
 
 class users:
     def __init__(self):
-        self.__users={}         ########    Create empty Dictionary
+        self.__users = {}  ########    Create empty Dictionary
         if not os.path.exists(FILE_PATH):
-            with open(FILE_PATH, "w", newline="",encoding="utf-8") as f:
+            with open(FILE_PATH, "w", newline="", encoding="utf-8") as f:
                 csv.DictWriter(f, fieldnames=COLUMNS).writeheader()
 
         else:
@@ -20,7 +22,8 @@ class users:
                             "password": row["password"],
                             "email": row["email"],
                         }
-                           #######     Connect with file and dictionary
+                        #######     Connect with file and dictionary
+
     def registration_page(self):
         print("\n****************   Welcome to our Registration Page  ****************")
         username = input("Enter name  : ").strip()
@@ -30,7 +33,7 @@ class users:
             print(f"'{username}' already exists!")
             return None
         else:
-            self.__users[username]={
+            self.__users[username] = {
                 "password": password,
                 "email": email,
             }

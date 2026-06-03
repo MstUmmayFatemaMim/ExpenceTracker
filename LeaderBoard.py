@@ -2,6 +2,7 @@ import csv
 
 from Config import FILE_PATH
 
+
 class leaderboard:
     def view_by_income(self):
         user_incomes = {}
@@ -11,20 +12,21 @@ class leaderboard:
                     name = row["username"]
                     amount = float(row["income"])
                     if name in user_incomes:
-                        user_incomes[name] = user_incomes[name] + amount    ##### old user in user_income
+                        user_incomes[name] = user_incomes[name] + amount  ##### old user in user_income
                     else:
-                        user_incomes[name] = amount    ##### new user in user_income
+                        user_incomes[name] = amount  ##### new user in user_income
 
         ranking_list = []
         for name, total in user_incomes.items():
-            ranking_list.append([total, name])  ###### it helps to sorted by money number otherwise it we wrote [name, total] it sorted by alphabetically
+            ranking_list.append([total,
+                                 name])  ###### it helps to sorted by money number otherwise it we wrote [name, total] it sorted by alphabetically
 
-        ranking_list.sort(reverse=True)     ####### helps to sorted high to low
+        ranking_list.sort(reverse=True)  ####### helps to sorted high to low
 
         print("\nRank  Username       Total Income")
         print("-" * 33)
         rank = 1
-        for total, name in ranking_list:
+        for total, name in ranking_list[:3]:
             print(f"{rank:<5} {name:<14} {total}")
             rank = rank + 1
 
@@ -50,7 +52,7 @@ class leaderboard:
         print("\nRank  Username       Total Expense")
         print("-" * 33)
         rank = 1
-        for total, name in ranking_list:
+        for total, name in ranking_list[:3]:
             print(f"{rank:<5} {name:<14} {total}")
             rank = rank + 1
 
@@ -61,7 +63,8 @@ class leaderboard:
                 if row["username"] != "":
                     name = row["username"]
                     if name not in user_balances:
-                        user_balances[name] = 0.0   ####    new user and do not add money here.without this it will create error
+                        user_balances[
+                            name] = 0.0  ####    new user and do not add money here.without this it will create error
                     if row["income"] != "":
                         user_balances[name] = user_balances[name] + float(row["income"])
                     if row["total_price"] != "" and row["income"] == "":
@@ -74,7 +77,7 @@ class leaderboard:
         print("\nRank  Username       Total Balance")
         print("-" * 33)
         rank = 1
-        for total, name in ranking_list:
+        for total, name in ranking_list[:3]:  ###### first 3 user
             print(f"{rank:<5} {name:<14} {total}")
             rank = rank + 1
 
@@ -83,21 +86,21 @@ class leaderboard:
         cat = input("Enter category to compare (food/rent/medicine/tour): ").strip()
         with open(FILE_PATH, "r", encoding="utf-8") as f:
             for row in csv.DictReader(f):
-                if row["username"]!="" and row["category"] == cat and row["total_price"] != "":
+                if row["username"] != "" and row["category"] == cat and row["total_price"] != "":
                     name = row["username"]
                     amount = float(row["total_price"])
                     if name in user_categories:
-                        user_categories[name] =user_categories[name]+ amount
+                        user_categories[name] = user_categories[name] + amount
                     else:
                         user_categories[name] = amount
         ranking_list = []
-        for name,total in user_categories.items():
+        for name, total in user_categories.items():
             ranking_list.append([total, name])
         ranking_list.sort(reverse=True)
         print("\nRank  Username       Total Expense")
         print("-" * 33)
         rank = 1
-        for categorys, name in ranking_list:
+        for categorys, name in ranking_list[:3]:
             print(f"{rank:<5} {name:<14} {categorys}")
             rank = rank + 1
 
@@ -125,4 +128,3 @@ class leaderboard:
                 break
             else:
                 print("Invalid choice.")
-
